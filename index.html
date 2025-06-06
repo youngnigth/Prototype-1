@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Young Desert</title>
+
+  <!-- TailwindCSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom modal backdrop style -->
+   <script src="https://js.stripe.com/v3/"></script>
+
+  <!-- Link to custom CSS -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+  <!-- ======== HEADER ======== -->
+   <header class="header-bg text-white shadow-md sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-4 py-5 sm:py-6 flex items-center justify-between">
+      <a href="/" class="flex items-center space-x-2">
+        <img
+          src="logo1.png"
+          alt="Logo"
+          class="h-8 sm:h-10 md:h-12 object-contain"
+        />
+       <span class="hidden sm:inline text-xl sm:text-2xl md:text-3xl font-extrabold">
+          Young Desert
+        </span>
+      </a> 
+      <nav class="hidden md:flex space-x-6">
+        <a href="/" class="hover:text-gray-300">Home</a>
+        <a href="#" class="hover:text-gray-300">About</a>
+        <a href="#" class="hover:text-gray-300">Contact</a>
+      </nav>
+      <button
+        id="mobileMenuBtn"
+        class="md:hidden focus:outline-none"
+        aria-label="Toggle menu"
+      >
+        ☰
+      </button>
+    </div>
+    <!-- Mobile nav -->
+    <nav id="mobileNav" class="hidden bg-black bg-opacity-70 px-4 pb-4 md:hidden">
+      <a
+        href="#"
+        class="block py-2 text-white hover:text-gray-300 border-b last:border-none"
+      >
+        Home
+      </a>
+      <a
+        href="#"
+        class="block py-2 text-white hover:text-gray-300 border-b last:border-none"
+      >
+        About
+      </a>
+      <a
+        href="#"
+        class="block py-2 text-white hover:text-gray-300"
+      >
+        Contact
+      </a>
+    </nav>
+  </header>
+
+
+  <!-- ======== MAIN CONTENT ======== -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <h2 class="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-800 mb-6">
+      Building your Business?., Still don't know How or Where?...
+    </h2>
+
+  <!-- Split the paragraph into “preview” + “more” -->
+  <p class="text-gray-800 text-base sm:text-lg">
+    <!-- 1) Always-visible portion -->
+    <span id="previewText">
+      Business and startup growth economies revolve around creating value, capturing market opportunities, and efficiently scaling operations. At the outset, a startup identifies a customer need or market gap and develops a minimum viable product (MVP) to validate its solution. Early growth often depends on securing initial funding—whether through founders’ capital, angel investors, or seed rounds—which helps the business refine its product, attract early adopters, and build a core team.
+    </span>
+
+    <!-- 2) Hidden-on-load portion -->
+    <span id="extraText" class="hidden">
+      As momentum builds, startups focus on achieving product–market fit, ensuring that revenue inflows cover core costs and allowing for strategic reinvestment into marketing, research and development, and talent acquisition. Economies of scale begin to emerge when variable costs per customer decrease as production or distribution expands, making each additional sale more profitable. Simultaneously, network effects—where the value of a product or service increases as more people use it—can accelerate adoption and create barriers to entry for competitors. Throughout this journey, maintaining a balance between rapid expansion and operational efficiency is crucial: too much growth without strong financial controls can lead to cash flow issues, while slow growth can cause startups to miss critical market windows. Ultimately, successful growth economies rely on a virtuous cycle of continuous customer feedback, data-driven decision-making, and iterative innovation, all underpinned by sound financial management and a scalable business model.
+    </span>
+
+    <!-- 3) “Read more” button -->
+    <button
+      id="toggleBtn"
+      class="mt-2 inline-block text-indigo-600 hover:underline text-sm sm:text-base"
+    >
+      Read more
+    </button>
+  </p>
+
+    <!-- Responsive grid: 1 column by default, 2 at sm+, 3 at lg+ -->
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      id="cardsContainer"
+    >
+      <!-- Card Template (duplicate as needed) -->
+    <!-- ========== TARJETA 1: Download PDF ========== -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+      <img
+        src="earth-min.jpg"
+        alt="Annotation 1 Preview"
+        class="w-full h-32 sm:h-40 lg:h-48 object-cover"
+      />
+      <div class="p-4 flex-1 flex flex-col">
+        <h3 class="text-lg sm:text-xl font-medium mb-2">Boost Your Finances</h3>
+        <p class="text-gray-600 text-sm sm:text-base flex-1">
+          A concise guide to Chapter 3 concepts, complete with your own
+          margin notes and key definitions.
+        </p>
+        <button
+          class="mt-4 w-full py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+          data-filename="Finanzas.pdf"
+        >
+          Descargar PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== TARJETA 2: Ver más ========== -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+      <img
+        src="earth-min.jpg"
+        alt="Annotation 2 Preview"
+        class="w-full h-32 sm:h-40 lg:h-48 object-cover"
+      />
+      <div class="p-4 flex-1 flex flex-col">
+        <h3 class="text-lg sm:text-xl font-medium mb-2">How much did you spend last month?...</h3>
+        <p class="text-gray-600 text-sm sm:text-base flex-1">
+          Track your liabilities using a easy way to add and control  your montly expenses. Get your Report 
+          now is totally <b>Free!!.</b>
+        </p>
+        <!-- Convertimos el <a> en BUTTON con data-learn -->
+        <button
+          class="mt-4 w-full py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition"
+          data-learn="index2.html"
+        >
+          Ver más
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== TARJETA 3: Compartir enlace ========== -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+      <img
+        src="earth-min.jpg"
+        alt="Annotation 3 Preview"
+        class="w-full h-32 sm:h-40 lg:h-48 object-cover"
+      />
+      <div class="p-4 flex-1 flex flex-col">
+        <h3 class="text-lg sm:text-xl font-medium mb-2">Annotation Set #3</h3>
+        <p class="text-gray-600 text-sm sm:text-base flex-1">
+          A full breakdown of Chapter 10’s key arguments—ideal for quick
+          review before exams.
+        </p>
+        <!-- Usamos data-learn="share" para indicar que es acción de compartir -->
+        <button
+          class="mt-4 w-full py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+          data-learn="share"
+        >
+          Compartir
+        </button>
+      </div>
+    </div>
+
+
+<!-- NUEVA TARJETA 4: Pago con Stripe Checkout (VIP Access) -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+  <!-- Encabezado con degradado para VIP Access -->
+  <div class="bg-gradient-to-r from-purple-600 to-pink-500 px-6 py-4">
+    <h3 class="text-xl font-bold text-white">VIP ACCESS PASS</h3>
+    <p class="mt-2 text-sm text-purple-100">
+      Acceso Exclusivo a Lanzamientos de Merch, Noticias y Documentos
+    </p>
+  </div>
+
+  <div class="p-4 flex-1 flex flex-col">
+    <!-- Lista de Beneficios Destacados -->
+    <ul class="space-y-2 mb-4">
+      <li class="flex items-start">
+        <span class="text-xl mr-2">🎁</span>
+        <span class="text-gray-700">
+          <strong>Drops de Merch Exclusivo</strong>: acceso anticipado a camisetas, sudaderas y más.
+        </span>
+      </li>
+      <li class="flex items-start">
+        <span class="text-xl mr-2">📰</span>
+        <span class="text-gray-700">
+          <strong>Noticias Premium</strong>: boletines semanales con contenido exclusivo y entrevistas.
+        </span>
+      </li>
+      <li class="flex items-start">
+        <span class="text-xl mr-2">📂</span>
+        <span class="text-gray-700">
+          <strong>Documentos Privados</strong>: whitepapers, guías y plantillas no disponibles públicamente.
+        </span>
+      </li>
+    </ul>
+
+    <!-- Beneficios Clave en Lista Enumerada -->
+    <div class="mb-4">
+      <h4 class="text-lg font-semibold text-gray-800">Beneficios Clave:</h4>
+      <ol class="list-decimal list-inside mt-2 space-y-1 text-gray-700">
+        <li><strong>Acceso 24 hs Antes</strong>: Sé el primero en enterarte.</li>
+        <li><strong>Descuentos Especiales</strong>: 20 % OFF en cada lanzamiento de merch.</li>
+        <li><strong>Comunidad VIP</strong>: Canal exclusivo en Discord para interactuar con el equipo.</li>
+        <li><strong>Soporte Prioritario</strong>: Respuestas más rápidas a tus consultas.</li>
+      </ol>
+    </div>
+
+    <!-- Precio y Botón de Stripe -->
+    <div class="mt-auto text-center">
+      <span class="text-3xl font-bold text-gray-900">$49.99</span>
+      <span class="text-sm text-gray-500">/ mes</span>
+      <p class="mt-1 text-gray-600 text-sm">(Cancela en cualquier momento)</p>
+
+     <!-- Botón sustituido por data-learn="TU_PAYMENT_LINK" -->
+      <button
+        class="mt-4 w-full py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-600 transition"
+        data-learn="https://buy.stripe.com/test_9B6eVc5XxaRi1ndbFsbZe05"
+      >
+        🔒 Pagar $49.99 USD
+      </button>
+
+      <p class="mt-2 text-xs text-gray-500">
+        Al hacer clic, serás redirigido a Stripe para completar el pago.
+      </p>
+    </div>
+  </div>
+</div>
+<!-- FIN TARJETA 4 -->
+
+
+<!-- TARJETA BASIC: Suscripción Básica -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+  <!-- Encabezado con degradado suave para Basic -->
+  <div class="bg-gradient-to-r from-blue-400 to-teal-400 px-6 py-4">
+    <h3 class="text-xl font-bold text-white">Basic Access</h3>
+    <p class="mt-2 text-sm text-blue-100">
+      Suscripción Básica a Contenido y Drops
+    </p>
+  </div>
+
+  <div class="p-4 flex-1 flex flex-col">
+    <!-- Lista de Beneficios Básicos -->
+    <ul class="space-y-2 mb-4">
+      <li class="flex items-start">
+        <span class="text-xl mr-2">📰</span>
+        <span class="text-gray-700">
+          <strong>Newsletter Mensual</strong>: Recibe noticias generales y novedades.
+        </span>
+      </li>
+      <li class="flex items-start">
+        <span class="text-xl mr-2">📸</span>
+        <span class="text-gray-700">
+          <strong>Acceso Público a Merch</strong>: Visualiza lanzamientos estándar.
+        </span>
+      </li>
+    </ul>
+
+    <!-- Beneficios Adicionales Simples -->
+    <div class="mb-4">
+      <h4 class="text-lg font-semibold text-gray-800">Extras Incluidos:</h4>
+      <ol class="list-decimal list-inside mt-2 space-y-1 text-gray-700">
+        <li><strong>10% OFF</strong> en artículos de merch seleccionados.</li>
+        <li><strong>Soporte Básico</strong> vía email (respuesta en 48 hrs).</li>
+      </ol>
+    </div>
+
+    <!-- Precio y Botón de Stripe para Basic -->
+    <div class="mt-auto text-center">
+      <span class="text-3xl font-bold text-gray-900">$9.99</span>
+      <span class="text-sm text-gray-500">/ mes</span>
+      <p class="mt-1 text-gray-600 text-sm">(Cancela en cualquier momento)</p>
+
+
+     <!-- Botón sustituido por data-learn="TU_PAYMENT_LINK" -->
+      <button
+        class="mt-4 w-full py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-600 transition"
+        data-learn="https://buy.stripe.com/test_cNibJ0adNaRie9Z24SbZe06"
+      >
+        🔒 Pagar $9.99 USD
+      </button>
+
+      <p class="mt-2 text-xs text-gray-500">
+        Al hacer clic, serás redirigido a Stripe para completar el pago.
+      </p>
+    </div>
+  </div>
+</div>
+<!-- FIN TARJETA BASIC -->
+
+<!-- TARJETA NORMAL: Suscripción Normal -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+  <!-- Encabezado con degradado intermedio para Normal -->
+  <div class="bg-gradient-to-r from-green-500 to-blue-500 px-6 py-4">
+    <h3 class="text-xl font-bold text-white">Normal Access</h3>
+    <p class="mt-2 text-sm text-green-100">
+      Suscripción Normal a Contenido, Drops y Recursos
+    </p>
+  </div>
+
+  <div class="p-4 flex-1 flex flex-col">
+    <!-- Lista de Beneficios Normales -->
+    <ul class="space-y-2 mb-4">
+      <li class="flex items-start">
+        <span class="text-xl mr-2">🎁</span>
+        <span class="text-gray-700">
+          <strong>Drops de Merch General</strong>: Acceso anticipado a lanzamientos estándar.
+        </span>
+      </li>
+      <li class="flex items-start">
+        <span class="text-xl mr-2">📰</span>
+        <span class="text-gray-700">
+          <strong>Newsletter Quincenal</strong>: Noticias, versiones especiales y entrevistas.
+        </span>
+      </li>
+      <li class="flex items-start">
+        <span class="text-xl mr-2">📂</span>
+        <span class="text-gray-700">
+          <strong>Documentos Generales</strong>: Whitepapers y guías compartidas públicamente.
+        </span>
+      </li>
+    </ul>
+
+    <!-- Beneficios Clave para Normal -->
+    <div class="mb-4">
+      <h4 class="text-lg font-semibold text-gray-800">Beneficios Clave:</h4>
+      <ol class="list-decimal list-inside mt-2 space-y-1 text-gray-700">
+        <li><strong>Acceso 48 hrs Antes</strong>: Compra antes que el público general.</li>
+        <li><strong>15% OFF</strong> en todos los lanzamientos de merch.</li>
+        <li><strong>Comunidad Normal</strong>: Canal de Discord para preguntas y FAQ.</li>
+        <li><strong>Soporte Prioritario</strong>: Respuesta en 24 hrs vía email.</li>
+      </ol>
+    </div>
+
+    <!-- Precio y Botón de Stripe para Normal -->
+    <div class="mt-auto text-center">
+      <span class="text-3xl font-bold text-gray-900">$19.99</span>
+      <span class="text-sm text-gray-500">/ mes</span>
+      <p class="mt-1 text-gray-600 text-sm">(Cancela en cualquier momento)</p>
+
+     <!-- Botón sustituido por data-learn="TU_PAYMENT_LINK" -->
+      <button
+        class="mt-4 w-full py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-600 transition"
+        data-learn="https://buy.stripe.com/test_9B6aEWbhRe3ue9ZeREbZe07"
+      >
+        🔒 Pagar $19.99 USD
+      </button>
+
+      <p class="mt-2 text-xs text-gray-500">
+        Al hacer clic, serás redirigido a Stripe para completar el pago.
+      </p>
+    </div>
+  </div>
+</div>
+<!-- FIN TARJETA NORMAL -->
+
+
+  </div>
+
+  <!-- /Contenedor de tarjetas -->
+
+      <!-- (Add more cards here, duplicating the same structure) -->
+    </div>
+  </main>
+
+  <!-- ======== DOWNLOAD INFO MODAL ======== -->
+  <!-- ============================ -->
+  <!--      MODAL DE REGISTRO      -->
+  <!-- ============================ -->
+  <div
+  id="modalBackdrop"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden"
+>
+  <div class="bg-white rounded-lg shadow-lg w-11/12 max-w-md p-6">
+    <h2 class="text-xl font-semibold mb-4">Necesitamos tus datos</h2>
+
+    <!-- Notar que action y method se dejan, pero enviaremos con JS a Web3Forms -->
+    <form id="downloadForm" class="space-y-4">
+      <!-- Campo oculto para la Access Key de Web3Forms -->
+      <input type="hidden" name="access_key" value="3a7e0042-9451-4644-bf29-1d9806ff8254" />
+
+      <!-- Campos visibles -->
+      <div>
+        <label for="visitorName" class="block font-medium mb-1">Nombre completo</label>
+        <input
+          type="text"
+          id="visitorName"
+          name="name"
+          class="w-full border border-gray-300 rounded px-3 py-2 focus:border-indigo-500"
+          placeholder="Tu nombre completo"
+        />
+      </div>
+      <div>
+        <label for="visitorEmail" class="block font-medium mb-1">Correo electrónico</label>
+        <input
+          type="email"
+          id="visitorEmail"
+          name="email"
+          class="w-full border border-gray-300 rounded px-3 py-2 focus:border-indigo-500"
+          placeholder="tucorreo@ejemplo.com"
+        />
+      </div>
+
+      <!-- Inputs ocultos para indicar qué acción ejecutar -->
+      <input type="hidden" id="actionType" name="actionType" value="" />
+      <input type="hidden" id="actionValue" name="actionValue" value="" />
+
+      <div class="flex justify-end space-x-3">
+        <button
+          type="button"
+          id="cancelBtn"
+          class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+        >
+          Continuar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ======== FOOTER (Black Theme) ======== -->
+<footer class="bg-gray-900 text-gray-300">
+  <div class="max-w-6xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      
+      <!-- 1) Logo + Description -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-2">
+          <!-- Swap in your logo, or just leave the text -->
+          <img src="logo1.png" alt="LearnHub Logo" class="h-8 w-auto object-contain" />
+          <span class="text-2xl font-bold text-white">Young Desert</span>
+        </div>
+        <p class="text-sm">
+          LearnHub Annotations provides concise, peer-reviewed notes and study guides to help entrepreneurs and students build their businesses.
+        </p>
+        <div class="flex space-x-4">
+          <!-- Twitter -->
+          <a href="https://twitter.com/YourHandle" target="_blank" class="hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23 3a10.9 10.9 0 01-3.14 1.53A4.48 4.48 0 0022.4.36a9.09 9.09 0 01-2.88 1.1A4.52 4.52 0 0016.67 0c-2.5 0-4.52 2.02-4.52 4.52 0 .35.04.7.1 1.03A12.8 12.8 0 011.64 1.15a4.51 4.51 0 00-.61 2.28 4.52 4.52 0 002.01 3.76 4.5 4.5 0 01-2.05-.57v.06c0 2.24 1.6 4.1 3.7 4.52a4.53 4.53 0 01-2.04.08 4.52 4.52 0 004.22 3.14A9.05 9.05 0 010 19.54a12.78 12.78 0 006.91 2.03c8.31 0 12.85-6.89 12.85-12.85 0-.2 0-.39-.02-.58A9.2 9.2 0 0023 3z"/>
+            </svg>
+          </a>
+          <!-- Facebook -->
+          <a href="https://facebook.com/YourPage" target="_blank" class="hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M22.676 0H1.324C.593 0 0 .593 0 1.326v21.348C0 23.407.593 24 1.324 24h11.495V14.708h-3.13v-3.622h3.13V8.412c0-3.1 1.894-4.788 4.66-4.788 1.325 0 2.464.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.716-1.795 1.765v2.315h3.587l-.467 3.622h-3.12V24h6.116C23.407 24 24 23.407 24 22.674V1.326C24 .593 23.407 0 22.676 0z"/>
+            </svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="https://linkedin.com/company/YourCompany" target="_blank" class="hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.02 24h5v-14h-5v14zM7.98 10h4.78v1.99h.07c.67-1.27 2.3-2.6 4.74-2.6C23.58 9.39 24 12.15 24 15.82v8.18h-5V16c0-2.14-.04-4.9-3-4.9-3 0-3.5 2.37-3.5 4.81v7.99h-5V10z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 2) Quick Links -->
+      <div>
+        <h4 class="text-lg font-semibold text-white mb-4">Quick Links</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Home</a></li>
+          <li><a href="#" class="hover:text-white">About</a></li>
+          <li><a href="#" class="hover:text-white">Contact</a></li>
+          <li><a href="#" class="hover:text-white">Blog</a></li>
+          <li><a href="#" class="hover:text-white">FAQs</a></li>
+        </ul>
+      </div>
+
+      <!-- 3) Resources -->
+      <div>
+        <h4 class="text-lg font-semibold text-white mb-4">Resources</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+          <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+          <li><a href="#" class="hover:text-white">Help Center</a></li>
+          <li><a href="#" class="hover:text-white">Support</a></li>
+          <li><a href="#" class="hover:text-white">Sitemap</a></li>
+        </ul>
+      </div>
+
+<!-- 4) Newsletter Signup → Web3Forms (con mensaje en la misma página) -->
+<div>
+  <h4 class="text-lg font-semibold text-white mb-4">Subscribe to Newsletter</h4>
+  <p class="text-sm mb-4">
+    Get the latest updates and business tips delivered straight to your inbox.
+  </p>
+  <form
+    id="newsletterForm"
+    class="flex flex-col sm:flex-row items-start sm:items-end gap-2"
+  >
+    <!-- Access Key de Web3Forms -->
+    <input type="hidden" name="access_key" value="3a7e0042-9451-4644-bf29-1d9806ff8254" />
+
+    <!-- (Opcional) Asunto para identificar que viene del footer -->
+    <input type="hidden" name="subject" value="Newsletter Signup" />
+
+    <!-- Campo de correo -->
+    <input
+      type="email"
+      name="email"
+      placeholder="Your email"
+      class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-white"
+      required
+    />
+
+    <!-- Botón de envío -->
+    <button
+      type="submit"
+      class="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500 transition text-sm"
+    >
+      Subscribe
+    </button>
+  </form>
+
+  <!-- Contenedor para el mensaje de "Gracias" -->
+  <div id="newsletterMessage" class="mt-2 text-sm text-green-400"></div>
+</div>
+
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="mt-12 border-t border-gray-700 pt-6 text-center text-xs text-gray-500">
+      &copy; 2025 Young-Desert. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+
+
+  <!-- ======== JavaScript ======== -->
+
+
+<script>
+  document.getElementById("newsletterForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const emailInput = form.querySelector('[name="email"]');
+    const accessKey = form.querySelector('[name="access_key"]').value;
+    const subject = form.querySelector('[name="subject"]').value;
+    const messageDiv = document.getElementById("newsletterMessage");
+
+    // Construir payload
+    const payload = {
+      access_key: accessKey,
+      email: emailInput.value.trim(),
+      subject: subject
+    };
+
+    // Deshabilitar botón para evitar múltiples clics
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting…";
+
+    fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) {
+          // Mostrar mensaje de agradecimiento
+          messageDiv.textContent = "¡Gracias por suscribirte!";
+          form.reset();
+        } else {
+          messageDiv.textContent = "Ocurrió un error. Intenta nuevamente.";
+          messageDiv.classList.remove("text-green-400");
+          messageDiv.classList.add("text-red-400");
+        }
+      })
+      .catch(err => {
+        messageDiv.textContent = "No se pudo conectar. Revisa tu conexión.";
+        messageDiv.classList.remove("text-green-400");
+        messageDiv.classList.add("text-red-400");
+        console.error("Web3Forms error:", err);
+      })
+      .finally(() => {
+        // Restaurar estado del botón
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Subscribe";
+      });
+  });
+</script>
+
+  <script src="main.js" defer></script>
+
+</body>
+</html>

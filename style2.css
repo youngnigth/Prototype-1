@@ -1,0 +1,473 @@
+/* ============================
+   Root Variables & Base Styles
+   ============================ */
+:root {
+  --color-bg-light: #ffffff;
+  --color-bg-dark: #0f0f17;
+  --color-primary: rgba(226, 126, 226, 0);       /* Vibrant purple/blue */
+  --color-primary-hover: rgb(170, 72, 212);
+  --color-text-dark: #1f2937;
+  --color-text-light: #ffffff;
+  --color-card-bg: #f8f8f8;
+  --color-border: #e3e3e4;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --font-family: 'Poppins', sans-serif;
+  --transition-speed: 0.3s;
+  --border-radius: 8px;
+  --max-width: 1200px;
+  --spacing-unit: 1rem;
+}
+
+/* Reset & Global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg-light);
+  color: var(--color-text-dark);
+  line-height: 1.6;
+}
+
+/* ============================
+   Header & Navigation
+   ============================ */
+.header {
+  position: relative; /* para que el .hamburger se posicione respecto al header */
+  width: 100%;
+  background: url(cobra-min.jpg);
+  color: var(--color-text-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem var(--spacing-unit);
+}
+
+/* Branding (logo + site title) */
+.header .branding {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.site-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-light);
+}
+
+/* Desktop Tabs (se ocultan en móvil) */
+
+.nav-container {
+  display: flex;
+  align-items: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: #432371;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0.5rem 0.25rem;
+  position: relative;
+  
+}
+
+.tab-btn:hover {
+  color: #a97ce7;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.25rem;
+  width: 100%;
+  height: 2px;
+  background-color: none;
+}
+
+/* ============================
+   Hamburger (visible solo en móvil)
+   ============================ */
+.hamburger {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  display: none;                 /* Al inicio lo escondemos en escritorio */
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.hamburger-line {
+  display: block;
+  height: 3px;
+  background-color: var(--color-text-light);
+  border-radius: 2px;
+}
+
+/* Muestra la hamburguesa sólo en pantallas pequeñas */
+@media (max-width: 767px) {
+  .hamburger {
+    display: flex;
+  }
+}
+
+/* ============================
+   Mobile Nav Overlay
+   ============================ */
+.mobile-nav {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 200px;                   /* Ajusta a tu gusto */
+  background: #432371;
+  backdrop-filter: blur(4px);
+  transform: translateY(-100%);
+  transition: transform var(--transition-speed) ease-in-out;
+  z-index: 50;
+  border-bottom-left-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+/* Estados de la clase .mobile-nav */
+.mobile-nav.hidden {
+  /* Oculto: fuera de pantalla */
+  transform: translateY(-100%);
+}
+
+.mobile-nav.open {
+  /* Visible: en posición normal */
+  transform: translateY(0);
+}
+
+/* Botones dentro de mobile-nav */
+.mobile-nav .mobile-tab-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text-light);
+  padding: 0.75rem 0.75rem;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+}
+
+.mobile-nav .mobile-tab-btn:hover,
+.mobile-nav .mobile-tab-btn.active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav .mobile-tab-btn:last-child {
+  border-bottom: none;
+}
+
+/* ============================
+   Tabs (desktop) – ejemplo básico
+   ============================ */
+.tabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-dark);
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+}
+
+.tab-btn:hover,
+.tab-btn.active {
+  background-color: var(--color-primary);
+  color: rgb(255, 255, 255);
+}
+
+/* Hacemos que .tabs se oculte en móvil */
+@media (max-width: 767px){ 
+  .tabs {
+    display: none;
+  }}
+
+
+/* ============================
+   Main Content
+   ============================ */
+.main-content {
+  max-width: var(--max-width);
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Sections */
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+  margin-bottom: 2rem;
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-text-dark);
+}
+
+/* ============================
+   Forms & Inputs
+   ============================ */
+.entry-form {
+  background: var(--color-card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.entry-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.entry-form label {
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  color: var(--color-text-dark);
+}
+
+.entry-form input[type="text"],
+.entry-form input[type="number"],
+.entry-form input[type="date"] {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  transition: border-color var(--transition-speed);
+}
+
+.entry-form input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.btn {
+  display: inline-block;
+  background-color: var(--color-primary-hover);
+  color: var(--color-text-light);
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+}
+
+.btn:hover {
+  background-color: var(--color-primary);
+}
+
+/* ============================
+   Tables & Totals
+   ============================ */
+.entries-table-container {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.entries-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-card-bg);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 1px 4px var(--color-shadow);
+}
+
+.entries-table th,
+.entries-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.95rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.entries-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+
+.entries-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Botones de acción dentro de la tabla (p. ej. “Delete”) */
+.entries-table .action-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444; /* rojo */
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* Total display */
+.total-display {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: right;
+  margin-top: 0.5rem;
+  color: var(--color-text-dark);
+}
+
+/* ============================
+   Overview Cards & Chart
+   ============================ */
+.overview-cards {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* En desktop, usar al menos 3 columnas; ajusta según necesites */
+.overview-cards--extended {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.card {
+  background: var(--color-card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-dark);
+}
+
+.card p {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: var(--color-text-dark);
+}
+
+.card small {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Download Report Button Container */
+.download-container {
+  text-align: right;
+  margin-bottom: 2rem;
+}
+
+/* Chart Container */
+.chart-container {
+  max-width: 600px;
+  margin: 0 auto 3rem;
+  background: var(--color-card-bg);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+/* ============================
+   Responsive & Media Queries
+   ============================ */
+
+/* Mostrar “hamburger” y ocultar “.tabs” en pantallas ≤768px */
+@media (max-width: 768px) {
+  .tabs {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+  }
+  /* Hacemos que .mobile-nav se muestre en flex cuando ya no tenga .hidden */
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Ocultar “hamburger” y “.mobile-nav” en pantallas >768px */
+@media (min-width: 769px) {
+  .hamburger {
+    display: none;
+  }
+  .mobile-nav {
+    display: none;
+  }
+}
+
+/* Tables vuelven horizontales en pantallas muy pequeñas */
+@media (max-width: 640px) {
+  .entries-table th,
+  .entries-table td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+  .total-display {
+    font-size: 0.9rem;
+  }
+}
+
+/* Las cards de overview se apilan en pantallas <600px */
+@media (max-width: 600px) {
+  .overview-cards--extended {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================
+   Utility Helpers
+   ============================ */
+.hidden {
+  display: none !important;
+}

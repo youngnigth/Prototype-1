@@ -1,0 +1,7 @@
+/* /styles.css */
+.header-bg {
+  background-image: url('cobra-min.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
