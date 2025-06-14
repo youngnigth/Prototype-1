@@ -124,7 +124,7 @@ body {
   justify-content: space-between;
   width: 28px;
   height: 22px;
-  background: white;
+  background: rgba(255, 255, 255, 0.192);
   border: none;
   cursor: pointer;
   z-index: 100;
