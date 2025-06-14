@@ -89,7 +89,7 @@ body {
 .tab-btn {
   background: none;
   border: none;
-  color: #432371;
+  color: #ffffff;
   font-size: 0.95rem;
   cursor: pointer;
   padding: 0.5rem 0.25rem;
@@ -98,7 +98,7 @@ body {
 }
 
 .tab-btn:hover {
-  color: #a97ce7;
+  color: #8a73ee;
 }
 
 .tab-btn.active::after {
@@ -124,7 +124,7 @@ body {
   justify-content: space-between;
   width: 28px;
   height: 22px;
-  background: rgba(255, 255, 255, 0.192);
+  background: rgba(255, 255, 255, 0);
   border: none;
   cursor: pointer;
   z-index: 100;
@@ -152,7 +152,7 @@ body {
   top: 100%;
   right: 0;
   width: 200px;                   /* Ajusta a tu gusto */
-  background: #432371;
+  background: #ffffff;
   backdrop-filter: blur(4px);
   transform: translateY(-100%);
   transition: transform var(--transition-speed) ease-in-out;
