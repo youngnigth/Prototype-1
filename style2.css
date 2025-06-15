@@ -89,7 +89,7 @@ body {
 .tab-btn {
   background: none;
   border: none;
-  color: #ffffff;
+  color: #432371;
   font-size: 0.95rem;
   cursor: pointer;
   padding: 0.5rem 0.25rem;
@@ -98,7 +98,7 @@ body {
 }
 
 .tab-btn:hover {
-  color: #8a73ee;
+  color: #a97ce7;
 }
 
 .tab-btn.active::after {
@@ -110,7 +110,6 @@ body {
   height: 2px;
   background-color: none;
 }
-
 /* ============================
    Hamburger (visible solo en móvil)
    ============================ */
