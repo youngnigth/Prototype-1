@@ -4,14 +4,14 @@ const posts = [
     title: "Hello, World!",
     date: "June 20, 2025",
     summary: "Welcome to my new Media Blog! Here I’ll share ideas, projects, and insights on all things media and the web.",
-    url: "posts/post-hello-world.html",
+    url: "Posts/post-hello-world.html",
     style: "blue"
   },
   {
     title: "Block-Chain",
     date: "June 22, 2025",
     summary: "Let’s explore a new project that uses basic HTML, CSS, and JS to build something cool.",
-    url: "posts/The-Block-Chain.html",
+    url: "Posts/The-Block-Chain.html",
     style: "green"
   }
 ];
