@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Media Blog</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="blog.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1><a href="index.html">My Media Blog</a></h1>
+      <button 
+        class="nav-toggle" 
+        aria-label="Toggle navigation" 
+        aria-controls="main-nav" 
+        aria-expanded="false"
+      >
+        &#9776;
+      </button>
+      <nav id="main-nav" class="main-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <input type="text" id="search" placeholder="Search posts…" />
+    <section id="posts"></section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-section footer-about">
+        <h3>My Media Blog</h3>
+        <p>Your daily dose of media insights, tutorials, and inspiration—crafted in dark mode.</p>
+      </div>
+      <div class="footer-section footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="posts.html">All Posts</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-section footer-subscribe">
+        <h4>Stay Updated</h4>
+        <form
+          id="subscribe-form"
+          action="https://api.web3forms.com/submit"
+          method="POST"
+        >
+          <input type="hidden" name="access_key" value="3a7e0042-9451-4644-bf29-1d9806ff8254" />
+          <input type="hidden" name="subject"    value="📰 New Subscriber – My Media Blog" />
+          <input
+            type="hidden"
+            name="redirect"
+            value="https://youngdesert.com/thank-you.html"
+          />
+          <input type="text" name="botcheck" style="display:none" />
+          <input
+            type="email"
+            name="email"
+            placeholder="Your email…"
+            required
+          />
+          <button type="submit">Subscribe</button>
+        </form>
+        <div class="social-icons">
+          <a href="#" aria-label="Twitter">🐦</a>
+          <a href="#" aria-label="Facebook">📘</a>
+          <a href="#" aria-label="Instagram">📸</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <small>© 2025 My Media Blog • All rights reserved</small>
+    </div>
+  </footer>
+</body>
+</html>
 
