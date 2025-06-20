@@ -1,496 +1,190 @@
-// script.js
+// pull in jsPDF
+const { jsPDF } = window.jspdf;
 
-// ------------------------------
-// Helper: Get / Set Local Storage
-// ------------------------------
-function getStoredEntries(key) {
-  const raw = localStorage.getItem(key);
-  return raw ? JSON.parse(raw) : [];
-}
-function setStoredEntries(key, array) {
-  localStorage.setItem(key, JSON.stringify(array));
-}
+const form = document.getElementById('entry-form');
+const descInput = document.getElementById('description');
+const typeInput = document.getElementById('type');
+const amountInput = document.getElementById('amount');
+const entriesContainer = document.getElementById('entries');
 
-// ------------------------------
-// Data Keys
-// ------------------------------
-const KEYS = {
-  LIABILITIES: "liabilitiesEntries",
-  SAVINGS: "savingsEntries",
-  INVESTMENTS: "investmentsEntries",
-  DEBT: "debtEntries",
-};
+const totalIncomeEl     = document.getElementById('total-income');
+const totalExpenseEl    = document.getElementById('total-expense');
+const totalInvestmentEl = document.getElementById('total-investment');
+const totalDebtEl       = document.getElementById('total-debt');
+const totalAssetEl      = document.getElementById('total-asset');
+const totalNetWorthEl   = document.getElementById('total-net-worth');
+const balanceEl         = document.getElementById('balance');
 
-// ------------------------------
-// DOM References: Forms & Tables
-// ------------------------------
-const forms = {
-  liabilities: document.getElementById("liabilities-form"),
-  savings: document.getElementById("savings-form"),
-  investments: document.getElementById("investments-form"),
-  debt: document.getElementById("debt-form"),
-};
-const tbodies = {
-  liabilities: document.getElementById("liabilities-tbody"),
-  savings: document.getElementById("savings-tbody"),
-  investments: document.getElementById("investments-tbody"),
-  debt: document.getElementById("debt-tbody"),
-};
-const totals = {
-  liabilities: document.getElementById("liabilities-total"),
-  savings: document.getElementById("savings-total"),
-  investments: document.getElementById("investments-total"),
-  debt: document.getElementById("debt-total"),
-};
+const downloadBtn       = document.getElementById('download-pdf');
+const ctx               = document.getElementById('distributionChart').getContext('2d');
 
-// ------------------------------
-// Overview DOM References
-// ------------------------------
-const overviewLiabilities    = document.getElementById("overview-liabilities");
-const overviewSavings        = document.getElementById("overview-savings");
-const overviewInvestments    = document.getElementById("overview-investments");
-const overviewDebt           = document.getElementById("overview-debt");
-const overviewCashflow       = document.getElementById("overview-cashflow");
-const overviewNet            = document.getElementById("overview-net");
-const overviewLiabilitiesPct = document.getElementById("overview-liabilities-pct");
-const overviewSavingsPct     = document.getElementById("overview-savings-pct");
-const overviewInvestmentsPct = document.getElementById("overview-investments-pct");
-const overviewDebtPct        = document.getElementById("overview-debt-pct");
+let entries = JSON.parse(localStorage.getItem('budgetEntries')) || [];
 
-// ------------------------------
-// Chart reference
-// ------------------------------
-let overviewChart = null;
-
-// ------------------------------
-// Initialize Sections & Listeners
-// ------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  ["liabilities", "savings", "investments", "debt"].forEach(renderEntries);
-  ["liabilities", "savings", "investments", "debt"].forEach(setupFormListener);
-  setupTabSwitching();
-  buildOverview();
-  document.getElementById("download-report").addEventListener("click", generatePDF);
+const chart = new Chart(ctx, {
+  type: 'pie',
+  data: {
+    labels: ['Income','Expense','Investment','Debt','Asset'],
+    datasets: [{
+      data: [0,0,0,0,0],
+      backgroundColor: ['#03dac6','#cf6679','#bb86fc','#ffca28','#4caf50']
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false }
 });
 
-// ------------------------------
-// Form Submission Handler
-// ------------------------------
-function setupFormListener(category) {
-  const formEl = forms[category];
-  formEl.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const name   = formEl.querySelector("input[type='text']").value.trim();
-    const amount = parseFloat(formEl.querySelector("input[type='number']").value);
-    const date   = formEl.querySelector("input[type='date']").value;
-    if (!name || isNaN(amount) || !date) {
-      alert("Please fill out all fields correctly.");
-      return;
-    }
-    const entry = { id: Date.now(), name, amount, date };
-    const key   = KEYS[category.toUpperCase()];
-    const arr   = getStoredEntries(key);
-    arr.push(entry);
-    setStoredEntries(key, arr);
-    formEl.reset();
-    renderEntries(category);
-    buildOverview();
+function render() {
+  entriesContainer.innerHTML = '';
+  let inc=0, exp=0, inv=0, dbt=0, ast=0;
+
+  entries.forEach((e, idx) => {
+    const sign = (e.type==='expense' || e.type==='debt') ? '-' : '+';
+    const amtStr = new Intl.NumberFormat('en-US',{
+      style:'currency', currency:'USD'
+    }).format(e.amount);
+
+    const card = document.createElement('div');
+    card.className = 'entry-card';
+    card.innerHTML = `
+      <div class="entry-info">
+        <span><strong>${e.description}</strong></span>
+        <span>${e.type.charAt(0).toUpperCase()+e.type.slice(1)}</span>
+      </div>
+      <div class="entry-action">
+        <span>${sign}${amtStr}</span>
+        <button data-index="${idx}">Delete</button>
+      </div>`;
+
+    entriesContainer.appendChild(card);
+
+    if (e.type==='income')      inc += e.amount;
+    else if (e.type==='expense') exp += e.amount;
+    else if (e.type==='investment') inv += e.amount;
+    else if (e.type==='debt')     dbt += e.amount;
+    else if (e.type==='asset')    ast += e.amount;
   });
+
+  const fmt = v => new Intl.NumberFormat('en-US',{
+    style:'currency', currency:'USD'
+  }).format(v);
+
+  totalIncomeEl.textContent     = fmt(inc);
+  totalExpenseEl.textContent    = fmt(exp);
+  totalInvestmentEl.textContent = fmt(inv);
+  totalDebtEl.textContent       = fmt(dbt);
+  totalAssetEl.textContent      = fmt(ast);
+
+  // net worth = inc + inv + ast - exp - dbt
+  const netWorth = inc + inv + ast - exp - dbt;
+  totalNetWorthEl.textContent   = fmt(netWorth);
+
+  // balance same as net worth
+  balanceEl.textContent         = fmt(netWorth);
+
+  chart.data.datasets[0].data = [inc,exp,inv,dbt,ast];
+  chart.update();
+
+  localStorage.setItem('budgetEntries', JSON.stringify(entries));
 }
 
-// ------------------------------
-// Render Table & Total
-// ------------------------------
-function renderEntries(category) {
-  const key   = KEYS[category.toUpperCase()];
-  const arr   = getStoredEntries(key);
-  const tbody = tbodies[category];
-  tbody.innerHTML = "";
-  let sum = 0;
-  arr.forEach((entry) => {
-    sum += entry.amount;
-    const formattedAmount = entry.amount.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td data-label="Name">${entry.name}</td>
-      <td data-label="Amount ($)">$${formattedAmount}</td>
-      <td data-label="Date">${entry.date}</td>
-      <td data-label="Action">
-        <button class="delete-btn" data-id="${entry.id}" data-cat="${category}">
-          Delete
-        </button>
-      </td>
-    `;
-    tbody.appendChild(tr);
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  entries.push({
+    description: descInput.value.trim(),
+    type: typeInput.value,
+    amount: parseFloat(amountInput.value)
   });
-  totals[category].textContent = sum.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-  tbody.querySelectorAll(".delete-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      deleteEntry(category, parseInt(btn.dataset.id));
-    });
-  });
-}
+  descInput.value = '';
+  amountInput.value = '';
+  render();
+});
 
-// ------------------------------
-// Delete a Single Entry
-// ------------------------------
-function deleteEntry(category, id) {
-  const key = KEYS[category.toUpperCase()];
-  let arr   = getStoredEntries(key);
-  arr = arr.filter((e) => e.id !== id);
-  setStoredEntries(key, arr);
-  renderEntries(category);
-  buildOverview();
-}
-
-// ------------------------------
-// Tab Switching Logic
-// ------------------------------
-function setupTabSwitching() {
-  const tabButtons = document.querySelectorAll(".tab-btn");
-  const sections   = document.querySelectorAll(".section");
-  tabButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      tabButtons.forEach((b) => b.classList.remove("active"));
-      sections.forEach((sec) => sec.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(btn.dataset.target).classList.add("active");
-    });
-  });
-}
-
-// ------------------------------
-// Build Overview & Chart
-// ------------------------------
-function buildOverview() {
-  const sumLiab = parseFloat(totals.liabilities.textContent.replace(/,/g, "")) || 0;
-  const sumSave = parseFloat(totals.savings.textContent.replace(/,/g, ""))     || 0;
-  const sumInv  = parseFloat(totals.investments.textContent.replace(/,/g, ""))  || 0;
-  const sumDebt = parseFloat(totals.debt.textContent.replace(/,/g, ""))         || 0;
-  const cashflow = sumSave + sumInv;
-  const networth = cashflow - (sumLiab + sumDebt);
-
-  overviewLiabilities.textContent = sumLiab.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  overviewSavings.textContent      = sumSave.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  overviewInvestments.textContent  = sumInv.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  overviewDebt.textContent         = sumDebt.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  overviewCashflow.textContent     = cashflow.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  overviewNet.textContent          = networth.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-  const grandTotal = sumLiab + sumSave + sumInv + sumDebt;
-  overviewLiabilitiesPct.textContent = grandTotal > 0 ? ((sumLiab / grandTotal) * 100).toFixed(0) + "%" : "0%";
-  overviewSavingsPct.textContent      = grandTotal > 0 ? ((sumSave / grandTotal) * 100).toFixed(0) + "%" : "0%";
-  overviewInvestmentsPct.textContent  = grandTotal > 0 ? ((sumInv / grandTotal) * 100).toFixed(0) + "%" : "0%";
-  overviewDebtPct.textContent         = grandTotal > 0 ? ((sumDebt / grandTotal) * 100).toFixed(0) + "%" : "0%";
-
-  const data   = [sumLiab, sumSave, sumInv, sumDebt];
-  const labels = ["Liabilities", "Savings", "Investments", "Debt"];
-  const colors = [
-    "rgba(239, 68, 68, 0.7)",    // red-ish
-    "rgba(16, 185, 129, 0.7)",   // green-ish
-    "rgba(59, 130, 246, 0.7)",   // blue-ish
-    "rgba(107, 114, 128, 0.7)",  // gray-ish
-  ];
-
-  const ctx = document.getElementById("overview-chart").getContext("2d");
-  if (overviewChart) overviewChart.destroy();
-  overviewChart = new Chart(ctx, {
-    type: "doughnut",
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: "#fff", borderWidth: 2 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } },
-  });
-}
-
-// ------------------------------
-// Generate and Download Professional PDF Report
-// ------------------------------
-function generatePDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF(); // Portrait, mm, A4
-
-  // ------------------------------
-  // 1. Cover Page
-  // ------------------------------
-  const title = "Financial Tracker Report";
-  const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text(title, doc.internal.pageSize.getWidth() / 2, 60, { align: "center" });
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(14);
-  doc.text(`Generated on ${dateStr}`, doc.internal.pageSize.getWidth() / 2, 75, { align: "center" });
-  doc.addPage();
-
-  // ------------------------------
-  // 2. Helper Functions
-  // ------------------------------
-  function fmt(num) {
-    return num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-
-  // Precompute entries and totals
-  const categoryData = {
-    liabilities:    getStoredEntries(KEYS.LIABILITIES),
-    savings:        getStoredEntries(KEYS.SAVINGS),
-    investments:    getStoredEntries(KEYS.INVESTMENTS),
-    debt:           getStoredEntries(KEYS.DEBT),
-  };
-  const categoryTotals = {
-    liabilities: categoryData.liabilities.reduce((sum, e) => sum + e.amount, 0),
-    savings:     categoryData.savings.reduce((sum, e) => sum + e.amount, 0),
-    investments: categoryData.investments.reduce((sum, e) => sum + e.amount, 0),
-    debt:        categoryData.debt.reduce((sum, e) => sum + e.amount, 0),
-  };
-  const grandTotal = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
-
-  const categories = [
-    { key: "liabilities", title: "Liabilities" },
-    { key: "savings",     title: "Smart Savings" },
-    { key: "investments", title: "Investments" },
-    { key: "debt",        title: "Debt" },
-  ];
-
-  // ------------------------------
-  // 3. Section Rendering
-  // ------------------------------
-  let yPos = 20;
-  categories.forEach((cat, idx) => {
-    const entries = categoryData[cat.key];
-    const total   = categoryTotals[cat.key];
-    const pct     = grandTotal > 0 ? ((total / grandTotal) * 100).toFixed(0) : "0";
-
-    // Section Heading
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text(cat.title, 14, yPos);
-    // Underline
-    const headingWidth = doc.getTextWidth(cat.title);
-    doc.setLineWidth(0.5);
-    doc.line(14, yPos + 1, 14 + headingWidth, yPos + 1);
-    yPos += 8;
-
-    // If no entries
-    if (entries.length === 0) {
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(12);
-      doc.text("(No entries)", 14, yPos);
-      yPos += 12;
-    } else {
-      // Table Header (monospace font for alignment)
-      doc.setFont("courier", "bold");
-      doc.setFontSize(12);
-      const header = "Name                       Amount ($)     Date";
-      doc.text(header, 14, yPos);
-      yPos += 6;
-
-      // Draw a subtle line under header
-      doc.setDrawColor(200);
-      doc.setLineWidth(0.2);
-      doc.line(14, yPos + 1, 196, yPos + 1);
-      yPos += 4;
-
-      // Reset font for rows
-      doc.setFont("courier", "normal");
-      entries.forEach((e) => {
-        const nameCol   = e.name.padEnd(25).slice(0, 25);
-        const amountCol = ("$" + fmt(e.amount)).padStart(12);
-        const dateCol   = e.date.padStart(12);
-        const line      = `${nameCol}${amountCol}     ${dateCol}`;
-        doc.text(line, 14, yPos);
-        yPos += 6;
-        if (yPos > 270) {
-          doc.addPage();
-          yPos = 20;
-        }
-      });
-
-      // Section Total (bold, right-aligned)
-      yPos += 4;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      const totalText = `Total ${cat.title}: $${fmt(total)} (${pct}%)`;
-      const txtWidth  = doc.getTextWidth(totalText);
-      doc.text(totalText, 196 - txtWidth, yPos);
-      yPos += 12;
-    }
-
-    // Page break if near bottom
-    if (idx < categories.length - 1 && yPos > 250) {
-      doc.addPage();
-      yPos = 20;
-    }
-  });
-
-  // ------------------------------
-  // 4. Overall Summary
-  // ------------------------------
-  if (yPos > 250) {
-    doc.addPage();
-    yPos = 20;
-  }
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text("Overall Summary", 14, yPos);
-  const overallWidth = doc.getTextWidth("Overall Summary");
-  doc.setLineWidth(0.5);
-  doc.line(14, yPos + 1, 14 + overallWidth, yPos + 1);
-  yPos += 8;
-
-  const sumLiab = categoryTotals.liabilities;
-  const sumSave = categoryTotals.savings;
-  const sumInv  = categoryTotals.investments;
-  const sumDebt = categoryTotals.debt;
-  const cashflow = sumSave + sumInv;
-  const networth = cashflow - (sumLiab + sumDebt);
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(12);
-  doc.text(`Cash Flow (Savings + Investments): $${fmt(cashflow)}`, 14, yPos);
-  yPos += 6;
-  doc.text(`Net Worth ((S + I) - (L + D)): $${fmt(networth)}`, 14, yPos);
-  yPos += 12;
-
-  // ------------------------------
-  // 5. Embed the Overview Chart
-  // ------------------------------
-  const canvas = document.getElementById("overview-chart");
-  const imgData = canvas.toDataURL("image/png", 1.0);
-  const pageWidth = doc.internal.pageSize.getWidth(); // 210mm
-  const margin = 14;
-  const chartWidth = (pageWidth - margin * 2) * 0.5; // 50% width
-  const aspect = canvas.height / canvas.width;
-  const chartHeight = chartWidth * aspect;
-  if (yPos + chartHeight > doc.internal.pageSize.getHeight() - 15) {
-    doc.addPage();
-    yPos = 20;
-  }
-  const xPos = (pageWidth - chartWidth) / 2;
-  doc.addImage(imgData, "PNG", xPos, yPos, chartWidth, chartHeight);
-
-  // ------------------------------
-  // 6. Add Page Numbers Footer
-  // ------------------------------
-  const pageCount = doc.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    const footer = `Page ${i} of ${pageCount}`;
-    doc.text(footer, doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: "center" });
-  }
-
-  // ------------------------------
-  // 7. Save the PDF
-  // ------------------------------
-  doc.save("financial_report.pdf");
-}
-
-
-
-// At the end of script.js (after existing code):
-
-// Toggle mobile nav
-
-document.addEventListener('DOMContentLoaded', () => {
-  // 1) Seleccionamos elementos clave
-  const hamburger   = document.querySelector('.hamburger');
-  const mobileNav   = document.querySelector('.mobile-nav');
-  const desktopTabs = Array.from(document.querySelectorAll('.tab-btn'));
-  const mobileTabs  = Array.from(document.querySelectorAll('.mobile-tab-btn'));
-
-  // 2) Toggle del menú móvil (añadir/quitar .open y .hidden)
-  hamburger.addEventListener('click', () => {
-    // Si mobileNav tiene .hidden, lo quitamos y añadimos .open.
-    // De lo contrario, lo ocultamos otra vez.
-    if (mobileNav.classList.contains('hidden')) {
-      mobileNav.classList.remove('hidden');
-      mobileNav.classList.add('open');
-      hamburger.classList.add('is-active'); // para animar la hamburguesa si lo deseas
-    } else {
-      mobileNav.classList.remove('open');
-      mobileNav.classList.add('hidden');
-      hamburger.classList.remove('is-active');
-    }
-  });
-
-  // 3) Función para activar una pestaña (desktop o mobile)
-  function activarPestana(listaBtns, botonActivo) {
-    listaBtns.forEach(b => b.classList.remove('active'));
-    botonActivo.classList.add('active');
-  }
-
-  // 4) Función para mostrar/ocultar secciones y hacer scroll
-  function mostrarSeccion(targetId) {
-    const todasSecciones = document.querySelectorAll('section[id$="-section"]');
-    todasSecciones.forEach(sec => {
-      if (sec.id === targetId) {
-        sec.classList.remove('hidden');
-        sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        sec.classList.add('hidden');
-      }
-    });
-  }
-
-  // 5) Listener para pestañas Desktop (.tab-btn)
-  desktopTabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const objetivo = btn.dataset.target; // ej. "savings-section"
-
-      // a) Activamos visualmente la pestaña en Desktop
-      activarPestana(desktopTabs, btn);
-
-      // b) Sincronizamos la pestaña equivalente en Mobile
-      const btnMobile = mobileTabs.find(mb => mb.dataset.target === objetivo);
-      if (btnMobile) {
-        activarPestana(mobileTabs, btnMobile);
-      }
-
-      // c) Mostramos la sección y hacemos scroll
-      mostrarSeccion(objetivo);
-
-      // d) Si el menú móvil estuviera abierto, lo cerramos
-      if (mobileNav.classList.contains('open')) {
-        mobileNav.classList.remove('open');
-        mobileNav.classList.add('hidden');
-        hamburger.classList.remove('is-active');
-      }
-    });
-  });
-
-  // 6) Listener para pestañas Mobile (.mobile-tab-btn)
-  mobileTabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const objetivo = btn.dataset.target;
-
-      // a) Activamos visualmente la pestaña en Mobile
-      activarPestana(mobileTabs, btn);
-
-      // b) Sincronizamos la pestaña equivalente en Desktop
-      const btnDesk = desktopTabs.find(dt => dt.dataset.target === objetivo);
-      if (btnDesk) {
-        activarPestana(desktopTabs, btnDesk);
-      }
-
-      // c) Mostramos la sección y hacemos scroll
-      mostrarSeccion(objetivo);
-
-      // d) Cerramos el menú móvil inmediatamente
-      mobileNav.classList.remove('open');
-      mobileNav.classList.add('hidden');
-      hamburger.classList.remove('is-active');
-    });
-  });
-
-  // 7) Al cargar la página, podemos “forzar” que se active la primera pestaña automáticamente:
-  if (desktopTabs.length > 0) {
-    desktopTabs[0].click();
+entriesContainer.addEventListener('click', e => {
+  if (e.target.tagName==='BUTTON') {
+    entries.splice(e.target.dataset.index, 1);
+    render();
   }
 });
+
+function loadImage(src) {
+  return new Promise(res => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => res(img);
+    img.onerror = () => res(null);
+  });
+}
+
+downloadBtn.addEventListener('click', () => {
+  (async () => {
+    const pdf = new jsPDF({unit:'pt',format:'a4'});
+    const fmt = v => new Intl.NumberFormat('en-US',{
+      style:'currency', currency:'USD'
+    }).format(v);
+
+    // recalc
+    let inc=0, exp=0, inv=0, dbt=0, ast=0;
+    entries.forEach(e => {
+      if (e.type==='income')      inc += e.amount;
+      if (e.type==='expense')     exp += e.amount;
+      if (e.type==='investment')  inv += e.amount;
+      if (e.type==='debt')        dbt += e.amount;
+      if (e.type==='asset')       ast += e.amount;
+    });
+
+    const headerY = 40;
+    const logo = await loadImage('logo.png');
+    pdf.setFillColor(30,30,30);
+    pdf.rect(0,headerY-10,pdf.internal.pageSize.getWidth(),50,'F');
+    if (logo) pdf.addImage(logo,'PNG',40,headerY,80,30);
+    pdf.setFontSize(18).setTextColor(255,255,255);
+    pdf.text('Young Desert', logo?140:40, headerY+15);
+    pdf.setFontSize(12)
+       .text(`Budget Report — ${new Date().toLocaleDateString()}`, logo?140:40, headerY+32);
+
+    const summaryData = [
+      ['Total Income',     inc],
+      ['Total Expense',    exp],
+      ['Total Investments',inv],
+      ['Total Debt',       dbt],
+      ['Total Assets',     ast],
+      ['Total Net Worth',  inc + inv + ast - exp - dbt]
+    ];
+
+    let y = headerY + 80;
+    pdf.setTextColor(0).setFontSize(14).text('Summary',40,y);
+    y+=20;
+    pdf.setFontSize(12);
+    summaryData.forEach(([lbl,val])=>{
+      pdf.text(`${lbl}:`,50,y);
+      pdf.text(fmt(val),200,y);
+      y+=18;
+    });
+
+    y+=10;
+    pdf.setLineWidth(0.5)
+       .line(40,y,pdf.internal.pageSize.getWidth()-40,y);
+    y+=10;
+    pdf.text('Description',50,y);
+    pdf.text('Type',300,y);
+    pdf.text('Amount',400,y);
+    y+=6;
+    pdf.line(40,y,pdf.internal.pageSize.getWidth()-40,y);
+    y+=20;
+
+    entries.forEach(e=>{
+      if (y > pdf.internal.pageSize.getHeight()-60) {
+        pdf.addPage();
+        y = 60;
+      }
+      pdf.text(e.description,50,y);
+      pdf.text(e.type.charAt(0).toUpperCase()+e.type.slice(1),300,y);
+      pdf.text(fmt(e.amount),400,y);
+      y+=18;
+    });
+
+    pdf.save('Executive_Budget_Report.pdf');
+  })();
+});
+
+// initial draw
+render();
