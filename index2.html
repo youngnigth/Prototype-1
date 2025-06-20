@@ -1,278 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Financial Tracker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Budget Manager - Night Mode</title>
 
-  <!-- Chart.js CDN for simple charts -->
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style2.css">
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-  <!-- jsPDF UMD build (for PDF generation) -->
+  <!-- jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  
-  <!-- Link to our CSS -->
-  <link rel="stylesheet" href="style2.css" />
 </head>
 <body>
+  <div class="container">
+    <header class="main-header">
+      <h1>Budget Manager</h1>
+      <nav><!-- Night Mode Enabled --></nav>
+    </header>
 
-<header class="header">
-  <div class="branding">
-    <a href="/" class="logo-link">
-      <img src="logo1.png" alt="My Tracker Logo" class="logo-img" />
-    </a>
-    <h1 class="site-title">Hi, Welcome!</h1>
+    <section class="card">
+      <form id="entry-form" class="form-group">
+        <input type="text" id="description" placeholder="Description" required>
+        <select id="type">
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+          <option value="investment">Investment</option>
+          <option value="debt">Debt</option>
+          <option value="asset">Asset</option>
+        </select>
+        <input type="number" id="amount" placeholder="Amount" step="0.01" required>
+        <button type="submit">Add</button>
+      </form>
+    </section>
+
+    <button class="download-btn" id="download-pdf">Download PDF</button>
+
+    <section class="chart-container card">
+      <canvas id="distributionChart"></canvas>
+    </section>
+
+    <section class="summary">
+      <div class="card"><h3>Total Income</h3><p id="total-income">$0.00</p></div>
+      <div class="card"><h3>Total Expense</h3><p id="total-expense">$0.00</p></div>
+      <div class="card"><h3>Total Investments</h3><p id="total-investment">$0.00</p></div>
+      <div class="card"><h3>Total Debt</h3><p id="total-debt">$0.00</p></div>
+      <div class="card"><h3>Total Assets</h3><p id="total-asset">$0.00</p></div>
+      <div class="card"><h3>Total Net Worth</h3><p id="total-net-worth">$0.00</p></div>
+      <div class="card"><h3>Balance</h3><p id="balance">$0.00</p></div>
+    </section>
+
+    <section class="card">
+      <h2>Entries</h2>
+      <div class="entries" id="entries"></div>
+    </section>
   </div>
 
-  <!-- Hamburger button (visible on mobile) -->
-  <button class="hamburger" aria-label="Toggle navigation">
-    <span class="hamburger-line"></span>
-    <span class="hamburger-line"></span>
-    <span class="hamburger-line"></span>
-  </button>
-
-  <div class="nav-container">
-    <!-- Desktop Tabs (se ocultarán en pantallas pequeñas) -->
-    <nav class="tabs">
-      <button class="tab-btn active" data-target="liabilities-section">Liabilities</button>
-      <button class="tab-btn" data-target="savings-section">Smart Savings</button>
-      <button class="tab-btn" data-target="investments-section">Investments</button>
-      <button class="tab-btn" data-target="debt-section">Debt</button>
-      <button class="tab-btn" data-target="overview-section">Overview</button>
-    </nav>
-
-    <!-- Mobile Nav (inicialmente oculta) -->
-    <nav class="mobile-nav hidden">
-      <button class="mobile-tab-btn active" data-target="liabilities-section">Liabilities</button>
-      <button class="mobile-tab-btn" data-target="savings-section">Smart Savings</button>
-      <button class="mobile-tab-btn" data-target="investments-section">Investments</button>
-      <button class="mobile-tab-btn" data-target="debt-section">Debt</button>
-      <button class="mobile-tab-btn" data-target="overview-section">Overview</button>
-    </nav>
-  </div>
-</header>
-
-
-
-
-
-  <main class="main-content">
-    <!-- Liabilities Section -->
-    <section id="liabilities-section" class="hidden">
-      <h2>Liabilities</h2>
-      <form id="liabilities-form" class="entry-form">
-        <div class="form-group">
-          <label for="liability-name">Name</label>
-          <input type="text" id="liability-name" required />
-        </div>
-        <div class="form-group">
-          <label for="liability-amount">Amount ($)</label>
-          <input type="number" id="liability-amount" min="0" step="0.01" required />
-        </div>
-        <div class="form-group">
-          <label for="liability-date">Date</label>
-          <input type="date" id="liability-date" required />
-        </div>
-        <button type="submit" class="btn">Add Liability</button>
-      </form>
-      <div class="entries-table-container">
-        <table class="entries-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Amount ($)</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="liabilities-tbody"></tbody>
-        </table>
-      </div>
-      <div class="total-display">
-        Total Liabilities: $<span id="liabilities-total">0.00</span>
-      </div>
-    </section>
-
-    <!-- Smart Savings Section -->
-    <section id="savings-section" class="hidden">
-      <h2>Smart Savings</h2>
-      <form id="savings-form" class="entry-form">
-        <div class="form-group">
-          <label for="savings-name">Name</label>
-          <input type="text" id="savings-name" required />
-        </div>
-        <div class="form-group">
-          <label for="savings-amount">Amount ($)</label>
-          <input type="number" id="savings-amount" min="0" step="0.01" required />
-        </div>
-        <div class="form-group">
-          <label for="savings-date">Date</label>
-          <input type="date" id="savings-date" required />
-        </div>
-        <button type="submit" class="btn">Add Savings</button>
-      </form>
-      <div class="entries-table-container">
-        <table class="entries-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Amount ($)</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="savings-tbody"></tbody>
-        </table>
-      </div>
-      <div class="total-display">
-        Total Savings: $<span id="savings-total">0.00</span>
-      </div>
-    </section>
-
-    <!-- Investments Section -->
-    <section id="investments-section" class="hidden">
-      <h2>Investments</h2>
-      <form id="investments-form" class="entry-form">
-        <div class="form-group">
-          <label for="investment-name">Name</label>
-          <input type="text" id="investment-name" required />
-        </div>
-        <div class="form-group">
-          <label for="investment-amount">Amount ($)</label>
-          <input type="number" id="investment-amount" min="0" step="0.01" required />
-        </div>
-        <div class="form-group">
-          <label for="investment-date">Date</label>
-          <input type="date" id="investment-date" required />
-        </div>
-        <button type="submit" class="btn">Add Investment</button>
-      </form>
-      <div class="entries-table-container">
-        <table class="entries-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Amount ($)</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="investments-tbody"></tbody>
-        </table>
-      </div>
-      <div class="total-display">
-        Total Investments: $<span id="investments-total">0.00</span>
-      </div>
-    </section>
-
-    <!-- Debt Section -->
-    <section id="debt-section" class="hidden">
-      <h2>Debt Tracker</h2>
-      <form id="debt-form" class="entry-form">
-        <div class="form-group">
-          <label for="debt-name">Name</label>
-          <input type="text" id="debt-name" required />
-        </div>
-        <div class="form-group">
-          <label for="debt-amount">Amount ($)</label>
-          <input type="number" id="debt-amount" min="0" step="0.01" required />
-        </div>
-        <div class="form-group">
-          <label for="debt-date">Date</label>
-          <input type="date" id="debt-date" required />
-        </div>
-        <button type="submit" class="btn">Add Debt</button>
-      </form>
-      <div class="entries-table-container">
-        <table class="entries-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Amount ($)</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="debt-tbody"></tbody>
-        </table>
-      </div>
-      <div class="total-display">
-        Total Debt: $<span id="debt-total">0.00</span>
-      </div>
-    </section>
-
-    <!-- Overview Section (UPDATED for Cash Flow + Net Worth) -->
-    <section id="overview-section" class="hidden">
-      <h2>Overview</h2>
-
-      <!-- 1. Cash Flow + Net Worth cards first -->
-      <div class="overview-cards overview-cards--extended">
-        <!-- Cash Flow Card -->
-        <div class="card cashflow-card">
-          <h3>Total Cash Flow</h3>
-          <p>$<span id="overview-cashflow">0.00</span></p>
-          <small>(Savings + Investments)</small>
-        </div>
-
-        <!-- Net Worth Card -->
-        <div class="card networth-card">
-          <h3>Total Net Worth</h3>
-          <p>$<span id="overview-net">0.00</span></p>
-          <small>((Savings + Investments) − (Liabilities + Debt))</small>
-        </div>
-
-        <!-- Liabilities Card -->
-        <div class="card">
-          <h3>Liabilities</h3>
-          <p>
-            $<span id="overview-liabilities">0.00</span>
-            <small>(<span id="overview-liabilities-pct">0%</span>)</small>
-          </p>
-        </div>
-
-        <!-- Smart Savings Card -->
-        <div class="card">
-          <h3>Smart Savings</h3>
-          <p>
-            $<span id="overview-savings">0.00</span>
-            <small>(<span id="overview-savings-pct">0%</span>)</small>
-          </p>
-        </div>
-
-        <!-- Investments Card -->
-        <div class="card">
-          <h3>Investments</h3>
-          <p>
-            $<span id="overview-investments">0.00</span>
-            <small>(<span id="overview-investments-pct">0%</span>)</small>
-          </p>
-        </div>
-
-        <!-- Debt Card -->
-        <div class="card">
-          <h3>Debt</h3>
-          <p>
-            $<span id="overview-debt">0.00</span>
-            <small>(<span id="overview-debt-pct">0%</span>)</small>
-          </p>
-        </div>
-      </div>
-
-          <!-- Download Report button (always visible in header) -->
-    <div class="download-container">
-      <button id="download-report" class="btn">Download Report (PDF)</button>
-    </div>
-
-      <!-- 2. Doughnut Chart (visualizing Liabilities / Savings / Investments / Debt) -->
-      <div class="chart-container">
-        <canvas id="overview-chart"></canvas>
-      </div>
-    </section>
-  </main>
-
-  <!-- Link to our JavaScript -->
+  <!-- Main script -->
   <script src="script2.js"></script>
 </body>
 </html>
